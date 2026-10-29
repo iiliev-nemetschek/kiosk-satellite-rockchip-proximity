@@ -1,0 +1,6 @@
+id=rockchip-proximity-permissions
+name=Rockchip Proximity Sensor permissions
+version=1.0.0
+versionCode=1
+author=iiliev-nemetschek
+description=Lets apps read the vi530x proximity input device at boot, for the Rockchip Proximity Sensor Kiosk Satellite plugin. Sets SELinux permissive.

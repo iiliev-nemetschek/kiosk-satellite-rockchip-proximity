@@ -1,0 +1,122 @@
+{
+  "schemaVersion": 1,
+  "apiVersion": 1,
+  "id": "rockchip-proximity-sensor",
+  "name": "Rockchip Proximity Sensor",
+  "version": "0.1.0",
+  "minAndroidSdk": 24,
+  "entryClass": "me.jxl.kiosk.plugins.rockchipprox.RockchipProximityPlugin",
+  "description": "Read the vi530x time-of-flight proximity sensor found on some Rockchip panels. Publishes distance and near/far sensors to Home Assistant and can wake the screen when someone approaches.",
+  "icon": "icon.png",
+  "author": "iiliev-nemetschek",
+  "license": "Apache-2.0",
+  "capabilities": [
+    "native",
+    "entities",
+    "host.control"
+  ],
+  "settings": [
+    {
+      "key": "nearThreshold",
+      "type": "number",
+      "title": "Near threshold",
+      "description": "Someone is near when the distance drops to this value or below.",
+      "min": 20,
+      "max": 3000,
+      "step": 10,
+      "default": 400,
+      "unit": "mm",
+      "group": "Detection"
+    },
+    {
+      "key": "farThreshold",
+      "type": "number",
+      "title": "Far threshold",
+      "description": "Someone has left when the distance rises to this value or above. Keep it above the near threshold so the state does not flicker.",
+      "min": 30,
+      "max": 4000,
+      "step": 10,
+      "default": 600,
+      "unit": "mm",
+      "group": "Detection"
+    },
+    {
+      "key": "maxRange",
+      "type": "number",
+      "title": "Maximum reported distance",
+      "description": "Readings above this value are reported as this value. The sensor returns noisy, very large numbers when nothing is in front of it.",
+      "min": 100,
+      "max": 4000,
+      "step": 50,
+      "default": 1000,
+      "unit": "mm",
+      "group": "Detection"
+    },
+    {
+      "key": "wakeOnApproach",
+      "type": "boolean",
+      "title": "Wake screen on approach",
+      "description": "Dismiss the screensaver and wake the display when the state changes from far to near.",
+      "default": false,
+      "group": "Detection"
+    },
+    {
+      "key": "exposeSensors",
+      "type": "boolean",
+      "title": "Expose to Home Assistant",
+      "description": "Adds a distance sensor and a near/far binary sensor to the kiosk ESPHome device when the proximity sensor is available.",
+      "default": true,
+      "group": "Home Assistant"
+    },
+    {
+      "key": "minChange",
+      "type": "number",
+      "title": "Minimum change to report",
+      "description": "The distance sensor updates only when the value moves by at least this much. Near/far changes are always reported.",
+      "min": 1,
+      "max": 500,
+      "step": 1,
+      "default": 20,
+      "unit": "mm",
+      "group": "Home Assistant"
+    },
+    {
+      "key": "updateInterval",
+      "type": "number",
+      "title": "Minimum update interval",
+      "description": "The distance sensor updates at most this often. Near/far changes are always reported immediately.",
+      "min": 100,
+      "max": 60000,
+      "step": 100,
+      "default": 1000,
+      "unit": "ms",
+      "group": "Home Assistant"
+    },
+    {
+      "key": "allowRoot",
+      "type": "boolean",
+      "title": "Allow root fallback",
+      "description": "Use a plugin helper through su only if direct access to the input device is denied. Your root manager may ask you to grant access.",
+      "default": false,
+      "group": "Hardware"
+    },
+    {
+      "key": "simulation",
+      "type": "boolean",
+      "title": "Simulation mode",
+      "description": "Sweep a fake distance without touching hardware. Home Assistant labels the sensors as simulated.",
+      "default": false,
+      "group": "Developer Tools"
+    }
+  ],
+  "commands": [
+    {
+      "id": "detect",
+      "title": "Check hardware access"
+    },
+    {
+      "id": "reading",
+      "title": "Show current reading"
+    }
+  ]
+}
