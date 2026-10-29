@@ -5,8 +5,9 @@
   "name": "Rockchip Proximity Sensor",
   "version": "0.1.0",
   "minAndroidSdk": 24,
+  "minAppVersion": "2026.10.12",
   "entryClass": "me.jxl.kiosk.plugins.rockchipprox.RockchipProximityPlugin",
-  "description": "Read the vi530x time-of-flight proximity sensor found on some Rockchip panels. Publishes distance and near/far sensors to Home Assistant and can wake the screen when someone approaches.",
+  "description": "Read the vi530x time-of-flight proximity sensor found on some Rockchip panels. Publishes distance and near/far sensors to Home Assistant, fires gesture triggers when someone approaches or leaves and can wake the screen.",
   "icon": "icon.png",
   "author": "iiliev-nemetschek",
   "license": "Apache-2.0",
@@ -64,7 +65,7 @@
       "key": "exposeSensors",
       "type": "boolean",
       "title": "Expose to Home Assistant",
-      "description": "Adds a distance sensor and a near/far binary sensor to the kiosk ESPHome device when the proximity sensor is available.",
+      "description": "Adds a distance sensor and a near/far binary sensor to the kiosk ESPHome device and to the readings on this page. Turning it off removes both. Triggers and screen wake keep working.",
       "default": true,
       "group": "Home Assistant"
     },
@@ -107,6 +108,16 @@
       "description": "Sweep a fake distance without touching hardware. Home Assistant labels the sensors as simulated.",
       "default": false,
       "group": "Developer Tools"
+    }
+  ],
+  "triggers": [
+    {
+      "id": "approach",
+      "title": "Someone approaches"
+    },
+    {
+      "id": "leave",
+      "title": "Someone leaves"
     }
   ],
   "commands": [

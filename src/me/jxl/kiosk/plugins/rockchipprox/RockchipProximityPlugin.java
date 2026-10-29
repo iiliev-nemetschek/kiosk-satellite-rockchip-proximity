@@ -139,7 +139,16 @@ public final class RockchipProximityPlugin implements KioskPlugin {
             || (ProximityMath.significant(lastPublished, value, number("minChange", 20))
                 && TimeUnit.NANOSECONDS.toMillis(time - lastPublishNanos) >= number("updateInterval", 1000));
         if (changed || due) publishState(time);
-        if (previous != null && !previous && now) wake();
+        if (previous != null && previous != now) {
+            fire(now ? "approach" : "leave");
+            if (now) wake();
+        }
+    }
+
+    // Older Kiosk Satellite releases throw UnsupportedOperationException for triggers.
+    private void fire(String trigger) {
+        try { host.fireTrigger(trigger); }
+        catch (Throwable e) { host.log("Could not fire the " + trigger + " trigger: " + e.getMessage()); }
     }
 
     private void wake() {

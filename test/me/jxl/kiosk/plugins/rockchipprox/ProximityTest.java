@@ -18,9 +18,16 @@ public final class ProximityTest {
         final List<Double> distances = new CopyOnWriteArrayList<>();
         final AtomicInteger changes = new AtomicInteger();
         final AtomicInteger wakes = new AtomicInteger();
+        final List<String> triggers = new CopyOnWriteArrayList<>();
+        volatile boolean triggersUnavailable;
         public void showWindow(String a, String b, String c) { throw new AssertionError("No overlay required"); }
         public void hideWindow() {}
         public void log(String value) {}
+        public void fireTrigger(String id) {
+            if (triggersUnavailable) throw new UnsupportedOperationException("Gesture triggers are unavailable");
+            assert id.equals("approach") || id.equals("leave") : id;
+            triggers.add(id);
+        }
         public void status(String value, boolean error) { status = value; statusError = error; changes.incrementAndGet(); }
         public void executeCommand(String command, Map<String, Object> arguments, CommandCallback callback) {
             assert command.equals("stopScreensaver") : command;
@@ -88,6 +95,9 @@ public final class ProximityTest {
         assert host.status.startsWith("Simulation");
         assert host.distanceName.contains("simulation");
         waitFor(() -> host.nearHistory.contains(true) && host.nearHistory.contains(false) && host.wakes.get() >= 1);
+        waitFor(() -> host.triggers.contains("approach") && host.triggers.contains("leave"));
+        // The first reading only establishes the state. Triggers fire on changes after it.
+        assert host.triggers.get(0).equals("approach") : "first trigger must be an approach: " + host.triggers;
         for (Double value : host.distances) assert value >= 0 && value <= 1000 : "distance outside 0..maxRange: " + value;
         plugin.execute("reading", Collections.emptyMap());
         waitFor(() -> host.status.startsWith("Distance "));
@@ -107,6 +117,17 @@ public final class ProximityTest {
         int count = host.changes.get();
         Thread.sleep(300);
         assert host.changes.get() == count : "no callbacks after stop";
+
+        // A host without gesture triggers must not break the plugin or flag an error.
+        Host legacy = new Host();
+        legacy.triggersUnavailable = true;
+        RockchipProximityPlugin older = new RockchipProximityPlugin();
+        older.start(legacy, defaults());
+        waitFor(() -> legacy.nearHistory.contains(true) && legacy.nearHistory.contains(false));
+        assert !legacy.statusError : "missing triggers must not report an error: " + legacy.status;
+        assert legacy.triggers.isEmpty();
+        older.stop();
+        System.out.println("PASS: a host without gesture triggers keeps the sensors working");
 
         // A host that cannot hand over a native library path defers to detect() instead of blocking enable.
         Host bare = new Host();

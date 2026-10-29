@@ -4,7 +4,9 @@
 
 - Initial release. Reads the `vi530x` time-of-flight sensor through its input device and reports the distance in millimetres.
 - Near/far state with a hysteresis band, a maximum reported distance and report throttling.
-- Home Assistant distance sensor and near/far binary sensor.
+- Home Assistant distance sensor and near/far binary sensor, also shown as readings on the plugin page.
+- Gesture triggers **Someone approaches** and **Someone leaves**, so any gesture action can follow the sensor.
+- Requires Kiosk Satellite 2026.10.12 or newer (`minAppVersion`).
 - Optional wake of the screen on approach.
 - Optional root fallback through a fixed helper, and a simulation mode.
 - Optional Magisk module that opens the sensor's input node at boot (`contrib/magisk/module`, built with `tools/build_magisk.py`).
